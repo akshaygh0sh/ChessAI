@@ -5,19 +5,19 @@ import time
 FPS = 60
 
 PIECE_IMAGES = {
-    "wK" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\WhiteKing.png"),
-    "wQ" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\WhiteQueen.png"),
-    "wR" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\WhiteRook.png"),
-    "wN" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\WhiteKnight.png"),
-    "wB" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\WhiteBishop.png"),
-    "wP" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\WhitePawn.png"),
+    "wK" : pygame.image.load(r"WhiteKing.png"),
+    "wQ" : pygame.image.load(r"WhiteQueen.png"),
+    "wR" : pygame.image.load(r"WhiteRook.png"),
+    "wN" : pygame.image.load(r"WhiteKnight.png"),
+    "wB" : pygame.image.load(r"WhiteBishop.png"),
+    "wP" : pygame.image.load(r"WhitePawn.png"),
 
-    "bK" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\BlackKing.png"),
-    "bQ" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\BlackQueen.png"),
-    "bR" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\BlackRook.png"),
-    "bN" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\BlackKnight.png"),
-    "bB" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\BlackBishop.png"),
-    "bP" : pygame.image.load(r"DataScience\Chess_AI\ChessPieceImages\BlackPawn.png")
+    "bK" : pygame.image.load(r"BlackKing.png"),
+    "bQ" : pygame.image.load(r"BlackQueen.png"),
+    "bR" : pygame.image.load(r"BlackRook.png"),
+    "bN" : pygame.image.load(r"BlackKnight.png"),
+    "bB" : pygame.image.load(r"BlackBishop.png"),
+    "bP" : pygame.image.load(r"BlackPawn.png")
 }
 
 def DrawBoard (screen, flipped):
@@ -42,70 +42,71 @@ def DrawPieces (screen, board, flipped):
             for col in range (8):
                 if (isinstance(board.board[row][col], ChessGame.King) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wK"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wK"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bK"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bK"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Queen) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wQ"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wQ"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bQ"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bQ"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Rook) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wR"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wR"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bR"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bR"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Knight) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wN"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wN"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bN"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bN"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Bishop) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wB"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wB"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bB"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bB"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Pawn) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wP"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wP"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bP"], (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bP"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(abs(col-7) * squareSize, abs(row-7) * squareSize, squareSize, squareSize))
     else:
         for row in range (8):
             for col in range (8):
                 if (isinstance(board.board[row][col], ChessGame.King) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wK"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wK"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bK"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bK"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Queen) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wQ"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wQ"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bQ"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bQ"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Rook) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wR"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wR"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bR"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bR"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Knight) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wN"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wN"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bN"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bN"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Bishop) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wB"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wB"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bB"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bB"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                 elif (isinstance(board.board[row][col], ChessGame.Pawn) == True):
                     if (board.board[row][col].color == True):
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wP"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["wP"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
                     else:
-                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bP"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
+                        screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bP"].convert_alpha(), (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
 
 
 def PossibleMoves (screen, board, flipped, pieceSelected):
+    pmoves = []
     squareSize = screen.get_height() // 8
     if (pieceSelected != None):
         curY, curX = pieceSelected
@@ -119,12 +120,12 @@ def PossibleMoves (screen, board, flipped, pieceSelected):
             if (board.board[targetY][targetX] != 0 and board.board[targetY][targetX].color != board.board[curY][curX].color):
                 takes = True
             if (flipped == True):
-                if (takes == True):
+                if (takes):
                     pygame.draw.circle(possibleCircles, (255, 0, 0, 170), (abs(targetX-7) * squareSize + squareSize // 2, abs(targetY-7) * squareSize + squareSize //2), squareSize // 2, squareSize // 10)
                 else:
                     pygame.draw.circle(possibleCircles, (160, 160, 160, 115), (abs(targetX-7) * squareSize + squareSize //2, abs(targetY-7) * squareSize + squareSize // 2), squareSize // 10)
             else:
-                if (takes == True):
+                if (takes):
                     pygame.draw.circle(possibleCircles, (255, 0, 0, 170), (targetX * squareSize + squareSize // 2, targetY * squareSize + squareSize //2), squareSize // 2, squareSize // 10)
                 else:
                     pygame.draw.circle(possibleCircles, (160, 160, 160, 115), (targetX * squareSize + squareSize //2, targetY * squareSize + squareSize // 2), squareSize // 10)
@@ -135,7 +136,8 @@ def PossibleMoves (screen, board, flipped, pieceSelected):
 def main ():
     screen = pygame.display.set_mode((560,560), pygame.RESIZABLE)
     pygame.display.set_caption("Chess Game: ")
-    
+    pygame.font.init()
+    myfont = pygame.font.SysFont('Comic Sans MS', 30)
     board = ChessGame.Board()
     board.InitalizeBoard()
 
@@ -148,12 +150,13 @@ def main ():
     DrawPieces(screen, board, flipped)
     pygame.display.update()
     lastMove = []
+    game_over = False
     while (running == True):
         clock.tick(FPS)
         for event in pygame.event.get():
             if (event.type == pygame.QUIT):
                 running = False
-            elif (event.type == pygame.MOUSEBUTTONDOWN):
+            elif (event.type == pygame.MOUSEBUTTONDOWN) and not game_over:
                 # Find the coordinates on the pygame window that the user clicked (x, y)
                 col, row = pygame.mouse.get_pos() 
                 col = col // (screen.get_height() // 8)
@@ -161,7 +164,7 @@ def main ():
                 if (flipped == True):
                     col = abs(col-7)
                     row = abs(row-7)
-                
+                #Is This needed?
                 if (len(lastMove) == 0 and (board.board[row][col] == 0 or board.board[row][col].color != whiteToMove)):
                     continue
 
@@ -193,8 +196,18 @@ def main ():
                         # Was legal move keeps track if the move was legal, if move was legal, then it was completed and it 
                         # is the opposite color's turn to move
                         wasLegal = board.Move(lastMove[0], lastMove[1])
-                        if (wasLegal == True):
+                        if wasLegal:
                             whiteToMove = not whiteToMove
+                        
+                        game_state = board.game_over()
+                        if game_state != 0:
+                            game_over = True
+                            if game_state == -1:
+                                print (f'{board.winner} won')
+                            elif game_state == 1:
+                                print('Stalemate')
+
+
                         end_time = time.time()
                         for x in board.listOfMoves:
                             print (x + " ", end = " ")
@@ -208,7 +221,10 @@ def main ():
                         # Get rid of the possible move circles 
                         DrawPieces (screen, board, flipped)
                         pygame.display.update()
-
+                
+                board.ShowBoard()
+    quit()
 
 if __name__ == "__main__":
     main()
+    

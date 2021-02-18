@@ -865,19 +865,22 @@ class Board ():
         for x in range (8):
             board.append([0] * 8)
         self.board = board
+        self.winner = None
+        
 
     def InitalizeBoard (self):
         # Set the position of the pieces
         for x in range (0, 8):
             # Set pawn positions
+            
             self.board[1][x] = Pawn (False, 1, x, self)
             self.board[6][x] = Pawn (True, 6, x, self)
-
+            
             # Set rook positions
             if (x == 0 or x == 7):
                 self.board[0][x] = Rook (False, 0, x, self)
                 self.board[7][x] = Rook (True, 7, x, self)   
-
+            
             # Set bishop positions
             if (x == 2 or x == 5):
                 self.board[0][x] = Bishop (False, 0, x, self)
@@ -887,7 +890,7 @@ class Board ():
             if (x == 1 or x == 6):
                 self.board[0][x] = Knight (False, 0, x, self)
                 self.board[7][x] = Knight (True, 7, x, self) 
-
+            
             # Set queen positions
             if (x == 3):
                 self.board[0][x] = Queen (False, 0, x, self)
@@ -899,7 +902,8 @@ class Board ():
                 self.blackKing = ((0, x))
                 self.board[7][x] = King (True, 7, x, self)
                 self.whiteKing = ((7, x))
-
+        self.pieces = sum([y != 0 for x in self.board for y in x ])
+        print(self.pieces)
     # Moves piece on the board, returns true if move was completed (and consequently legal) and false if move was not able
     # to be completed (move was illegal or the coordinates provided did not contain a piece)
     def Move (self, curCoords, targetCoords):
@@ -979,6 +983,53 @@ class Board ():
         else:
             return False
 
+
+    def game_over(self):
+        '''
+        Checks to see if the game is over and returns 1 of 3 possible states
+        1 game ends in a stalemate
+        0 game continues 
+        -1 game ends in a checkmate and sets self.winner to the winner
+        '''
+        blackMove = False
+        whiteMove = False
+        blackPieces = set()
+        whitePieces = set()
+        for x in self.board:
+            for y in x:
+                if y != 0:
+                    if y.color:
+                        if len(y.MoveList()) != 0:
+                            whiteMove = True
+                        whitePieces.add(y)
+                    else:
+                        if len(y.MoveList()) != 0:
+                            blackMove = True
+                        blackPieces.add(y)
+        
+        if InCheck(self.board, self.blackKing) and not blackMove:
+            self.winner = 'White'
+            return -1
+        elif InCheck(self.board, self.whiteKing) and not whiteMove:
+            self.winner = 'Black'
+            return -1
+        elif (self.totalMoves%2 == 0 and not whiteMove) or (not blackMove):
+            return 1
+        found = False
+        for piece in blackPieces:
+            if isinstance(piece, Queen) or isinstance(piece, Rook) or isinstance(piece, Pawn) or (isinstance(piece, Knight) and found)\
+                or (isinstance(piece, Bishop) and found):
+                return 0
+            if isinstance(piece, Bishop):
+                found = True
+                
+        for piece in whitePieces:
+            if isinstance(piece, Queen) or isinstance(piece, Rook) or isinstance(piece, Pawn) or (isinstance(piece, Knight) and found)\
+                or (isinstance(piece, Bishop) and found):
+                return 0
+            if isinstance(piece, Bishop):
+                found = True        
+        return 1
 
     def ShowBoard (self):
         print (" -----------------")
