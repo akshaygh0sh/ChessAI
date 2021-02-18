@@ -219,6 +219,57 @@ class Piece:
             return prefix + str(files[fileNum]) + str(abs(rankNum-7) + 1)
 
 
+    def GameOver(self):
+        '''
+        Checks to see if the game is over and returns 1 of 3 possible states
+        1 game ends in a stalemate
+        0 game continues 
+        -1 game ends in a checkmate
+        '''
+
+        rook_count = 0
+        bishop_count = 0 
+        knight_count = 0 
+        queen_count = 0 
+        pawn_count = 0 
+        canMove = False
+        for rows in self.board.board:
+            for piece in rows:
+                if piece != 0 and piece.color == self.color:
+                    
+                    if isinstance(piece, Queen):
+                        queen_count += 1
+                    elif isinstance(piece, Rook):
+                        rook_count += 1
+                    elif isinstance(piece, Bishop):
+                        bishop_count += 1
+                    elif isinstance(piece, Knight):
+                        knight_count += 1
+                    elif isinstance(piece, Pawn):
+                        pawn_count += 1 
+                    if len(piece.MoveList()) != 0:
+                        canMove = True
+        
+        if self.color and InCheck(self.board.board, self.board.whiteKing) and not canMove: #Black checkmates
+            return -1 
+        elif not self.color and InCheck(self.board.board, self.board.blackKing) and not canMove: #White checkmates
+            return -1
+        elif self.color and (self.board.totalMoves%2 == 0 ) and not canMove: #Stalemate
+            return 1
+        elif not self.color and self.board.totalMoves%2 != 0 and not canMove: #Stalemate
+            return 1
+
+        #Checks if draw by insufficient material
+        if queen_count >0 or pawn_count >0 or rook_count >0:
+            return 0 
+        elif bishop_count >= 1 and knight_count >= 1: 
+            return 0
+        elif bishop_count >= 2: 
+            return 0 
+        #Player cannot mate with remaining pieces
+        #Game ends in stalemate
+        return 1
+
 class Pawn(Piece):
     hasMoved = False
     def MoveList (self):
@@ -865,19 +916,22 @@ class Board ():
         for x in range (8):
             board.append([0] * 8)
         self.board = board
+        self.winner = None
+        
 
     def InitalizeBoard (self):
         # Set the position of the pieces
         for x in range (0, 8):
             # Set pawn positions
+            
             self.board[1][x] = Pawn (False, 1, x, self)
             self.board[6][x] = Pawn (True, 6, x, self)
-
+            
             # Set rook positions
             if (x == 0 or x == 7):
                 self.board[0][x] = Rook (False, 0, x, self)
                 self.board[7][x] = Rook (True, 7, x, self)   
-
+            
             # Set bishop positions
             if (x == 2 or x == 5):
                 self.board[0][x] = Bishop (False, 0, x, self)
@@ -887,7 +941,7 @@ class Board ():
             if (x == 1 or x == 6):
                 self.board[0][x] = Knight (False, 0, x, self)
                 self.board[7][x] = Knight (True, 7, x, self) 
-
+            
             # Set queen positions
             if (x == 3):
                 self.board[0][x] = Queen (False, 0, x, self)
@@ -899,7 +953,8 @@ class Board ():
                 self.blackKing = ((0, x))
                 self.board[7][x] = King (True, 7, x, self)
                 self.whiteKing = ((7, x))
-
+        self.pieces = sum([y != 0 for x in self.board for y in x ])
+        print(self.pieces)
     # Moves piece on the board, returns true if move was completed (and consequently legal) and false if move was not able
     # to be completed (move was illegal or the coordinates provided did not contain a piece)
     def Move (self, curCoords, targetCoords):
@@ -979,6 +1034,8 @@ class Board ():
         else:
             return False
 
+
+    
 
     def ShowBoard (self):
         print (" -----------------")
