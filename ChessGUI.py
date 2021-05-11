@@ -1,6 +1,7 @@
 import pygame
 import ChessGame
 import time
+import numpy as np
 
 FPS = 60
 
@@ -20,7 +21,7 @@ PIECE_IMAGES = {
     "bP" : pygame.image.load(r"ChessPieceImages\BlackPawn.png")
 }
 
-def DrawBoard (screen, flipped):
+def DrawBoard (screen):
     screen.fill((0,0,0))
     lightSquare = (225, 220, 190)
     darkSquare = (155, 105, 50)
@@ -34,7 +35,7 @@ def DrawBoard (screen, flipped):
                 pygame.draw.rect(screen, darkSquare, pygame.Rect((col * squareSize), (row * squareSize), squareSize, squareSize))
 
 def DrawPieces (board, screen, flipped):
-    DrawBoard(screen, flipped)
+    DrawBoard(screen)
     windowHeight = screen.get_height()
     squareSize = windowHeight//8
     if (flipped == True):
@@ -104,8 +105,8 @@ def DrawPieces (board, screen, flipped):
                     else:
                         screen.blit(pygame.transform.smoothscale(PIECE_IMAGES["bP"], (squareSize, squareSize)), pygame.Rect(col * squareSize, row * squareSize, squareSize, squareSize))
 
-
-def PossibleMoves (board, screen, flipped, pieceSelected):
+# FIX THIS FUNCTION LATER
+""" def PossibleMoves (board, screen, flipped, pieceSelected):
     squareSize = screen.get_height() // 8
     curY, curX = pieceSelected
 
@@ -114,7 +115,7 @@ def PossibleMoves (board, screen, flipped, pieceSelected):
         possibleCircles = pygame.Surface((screen.get_height(), screen.get_height()), pygame.SRCALPHA)
         for x in moves:
             takes = False
-            targetY, targetX = x
+            targetY, targetX = x[0], x[1]
             if (isinstance(board.board[targetY][targetX], ChessGame.Piece) == True and board.board[targetY][targetX].color != board.board[curY][curX].color):
                 takes = True
             if (flipped == True):
@@ -127,7 +128,7 @@ def PossibleMoves (board, screen, flipped, pieceSelected):
                     pygame.draw.circle(possibleCircles, (255, 0, 0, 170), (targetX * squareSize + squareSize // 2, targetY * squareSize + squareSize //2), squareSize // 2, squareSize // 10)
                 else:
                     pygame.draw.circle(possibleCircles, (160, 160, 160, 115), (targetX * squareSize + squareSize //2, targetY * squareSize + squareSize // 2), squareSize // 10)
-        screen.blit(possibleCircles, (0,0))
+        screen.blit(possibleCircles, (0,0)) """
 
 
 def Play (board, screen, flipped):
@@ -148,17 +149,18 @@ def Play (board, screen, flipped):
                 col, row = pygame.mouse.get_pos()
                 col = col // (screen.get_height() // 8)
                 row = row // (screen.get_height() // 8)
+                
                 if (flipped == True):
-                    col = abs(col-7)
-                    row = abs(row-7)
+                    col = 7 - col
+                    row = 7 - row
 
                 if (len(lastMove) == 0):
                     # If it is the first click the player makes and they choose the side to move's piece, then record the piece
                     # they selected.
                     if (isinstance(board.board[row][col], ChessGame.Piece) == True and board.board[row][col].color == board.whiteToMove):
                         squareClicked = (row, col)
-                        PossibleMoves(board, screen, flipped, squareClicked)
-                        lastMove.append((row,col))
+                        # PossibleMoves(board, screen, flipped, squareClicked)
+                        lastMove.append((row,col, ""))
                 else:
                     # If player clicks the same square, reset their moves
                     if (squareClicked == (row, col)):
@@ -171,11 +173,10 @@ def Play (board, screen, flipped):
                         squareClicked = (row, col)
                         lastMove.append(squareClicked)
                         DrawPieces(board, screen, flipped)
-                        PossibleMoves(board, screen, flipped, squareClicked)
+                        # PossibleMoves(board, screen, flipped, squareClicked)
                     # If player clicks a square after selecting a piece, try to move the selected piece to that square
                     else:
                         squareClicked = (row, col)
-                        lastMove.append(squareClicked)
                         piece = board.board[lastMove[0][0]][lastMove[0][1]]
                         promotion = ""
                         # Check if piece is pawn that wants to be promoted
@@ -259,42 +260,68 @@ def Play (board, screen, flipped):
                                     continue
                             
                             # Find the coordinates on the pygame window that the user clicked (x, y)
-                            col, row = pygame.mouse.get_pos()
-                            col = col // (screen.get_height() // 8)
-                            row = row // (screen.get_height() // 8)
+                            promoCol, promoRow = pygame.mouse.get_pos()
+                            promoCol = promoCol // (screen.get_height() // 8)
+                            promoRow = promoRow // (screen.get_height() // 8)
                             if (flipped == True):
-                                col = abs(col-7)
-                                row = abs(row-7)
+                                promoCol = abs(col-7)
+                                promoRow = abs(row-7)
                                     
                             if (squareClicked[0] == 0):
-                                if (row == 0):
-                                    promotion = "Q"
-                                if (row == 1):
+                                if (promoRow == 0):
+                                    promotion = ""
+                                if (promoRow == 1):
                                     promotion = "N"
-                                if (row == 2):
+                                if (promoRow == 2):
                                     promotion = "R"
-                                if (row == 3):
+                                if (promoRow == 3):
                                     promotion = "B"
                             elif (squareClicked[0] == 7):
-                                if (row == 7):
-                                    promotion = "Q"
-                                if (row == 6):
+                                if (promoRow == 7):
+                                    promotion = ""
+                                if (promoRow == 6):
                                     promotion = "N"
-                                if (row == 5):
+                                if (promoRow == 5):
                                     promotion = "R"
-                                if (row == 4):
+                                if (promoRow == 4):
                                     promotion = "B"
 
                         # If the move is legal, the Move function will change the board appropriately and change whose move it is
                         # If not, the move is not made and the moves are reset and it's still the same player's move
-                        if (board.whiteToMove == True):
-                            print ("WHITE EVAL: ")
-                        else:
-                            print ("BLACK EVAL: ")
-                        print (ChessGame.Eval(board, board.whiteToMove))
+                        squareClicked = (row, col, promotion)
+                        lastMove.append(squareClicked)
                         
+                        
+                        dy = squareClicked[0]-lastMove[0][0]
+                        dx = squareClicked[1]-lastMove[0][1]
+
+                        rankNum = lastMove[0][0]
+                        fileNum = lastMove[0][1]
+
+                        if (board.whiteToMove == False):
+                            rankNum = 7 - rankNum
+                            fileNum = 7 - fileNum
+                        
+                        moveCode = board.EncodeMove((dy, dx), promotion)
+
+                        # If moveCode is None, it means potential move is completely illegal (i.e. does not even exist in the game of chess),
+                        # so clear the move queue and the last squareClicked
+                        if (moveCode == None):
+                            squareClicked = ()
+                            lastMove.clear()
+                            # Get rid of possible move circles from last piece selected
+                            DrawPieces(board, screen, flipped)
+                            pygame.display.update()
+                            continue
+                            
+                        moveTuple = (rankNum, fileNum, moveCode)
                         start_time = time.time()
-                        board.Move(lastMove, promotion)
+                        # print ("Move Tuple:", moveTuple)
+                        # print ("Move Code: ", np.ravel_multi_index((moveTuple), (8,8,73)))
+                        board.Move(np.ravel_multi_index((moveTuple), (8,8,73)))
+
+                        print (ChessGame.Eval(board, color = board.whiteToMove))
+                        
                         end_time = time.time()
                         print ("Calculated in " + str(end_time-start_time) + " seconds.")
                         squareClicked = ()
@@ -320,9 +347,6 @@ def Play (board, screen, flipped):
     if (board.gameState == -1):
         print ("GAME IS DRAWN.")
 
-    for x in board.listOfMoves:
-        print (x + " ", end = "")
-
 def main ():
     screen = pygame.display.set_mode((640,640), pygame.RESIZABLE, pygame.SRCALPHA)
     pygame.display.set_caption("Chess Game: ")
@@ -337,6 +361,9 @@ def main ():
     flipped = False
     DrawPieces (board, screen, flipped)
     Play(board, screen, flipped)
+
+    for x in board.listOfMoves:
+        print (x + " ", end = "")
 
 
 if __name__ == "__main__":
