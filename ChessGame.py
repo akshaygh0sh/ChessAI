@@ -274,24 +274,24 @@ def InCheck(board, coordinates):
     rankNum, fileNum = coordinates
 
     # Check for pawn checks on White King
-    if (isinstance(board[rankNum][fileNum], Piece) == True and board[rankNum][fileNum].color == True):
+    if (isinstance(board[rankNum][fileNum], Piece) and board[rankNum][fileNum].color == True):
         for dx in (-1, 1):
             # Impossible for White King to be in check from a pawn if the white king is on the 7th or 8th ranks
             if (rankNum > 1):
                 pawnFile = fileNum + dx
                 if (pawnFile >= 0 and pawnFile <= 7):
-                    if (isinstance(board[rankNum-1][pawnFile], Pawn) == True and board[rankNum-1][pawnFile].color != board[rankNum][fileNum].color):
+                    if (isinstance(board[rankNum-1][pawnFile], Pawn) and board[rankNum-1][pawnFile].color != board[rankNum][fileNum].color):
                         return True
             else:
                 break
     # Check for pawn checks on Black King
-    elif (isinstance(board[rankNum][fileNum], Piece) == True and board[rankNum][fileNum].color == False):
+    elif (isinstance(board[rankNum][fileNum], Piece) and board[rankNum][fileNum].color == False):
         for dx in (-1, 1):
             # Impossible for Black King to be in check from a pawn if the black king is on the 1st or 2nd ranks
             if (rankNum < 6):
                 pawnFile = fileNum + dx
                 if (pawnFile >= 0 and pawnFile <= 7):
-                    if (isinstance(board[rankNum+1][pawnFile], Pawn) == True and board[rankNum+1][pawnFile].color != board[rankNum][fileNum].color):
+                    if (isinstance(board[rankNum+1][pawnFile], Pawn) and board[rankNum+1][pawnFile].color != board[rankNum][fileNum].color):
                         return True
             else:
                 break
@@ -301,7 +301,7 @@ def InCheck(board, coordinates):
         targetY = rankNum + dy
         targetX = fileNum + dx
         if ((targetX >= 0 and targetX <= 7) and (targetY >= 0 and targetY <= 7)):
-            if (isinstance(board[targetY][targetX], King) == True):
+            if (isinstance(board[targetY][targetX], King)):
                 return True
 
     # Checks for checks from Knights
@@ -309,45 +309,45 @@ def InCheck(board, coordinates):
         targetY = rankNum + dy
         targetX = fileNum + dx
         if ((targetY >= 0 and targetY <= 7) and (targetX >= 0 and targetX <= 7)):
-            if (isinstance(board[targetY][targetX], Knight) == True and board[targetY][targetX].color != board[rankNum][fileNum].color):
+            if (isinstance(board[targetY][targetX], Knight) and board[targetY][targetX].color != board[rankNum][fileNum].color):
                 return True
 
     # Check for vertical checks from rooks/queens
     for y in range(rankNum - 1, -1, -1):
-        if (isinstance(board[y][fileNum], Piece) == True and board[y][fileNum].color != board[rankNum][fileNum].color):
-            if (isinstance(board[y][fileNum], Rook) == True):
+        if (isinstance(board[y][fileNum], Piece) and board[y][fileNum].color != board[rankNum][fileNum].color):
+            if (isinstance(board[y][fileNum], Rook)):
                 return True
             else:
                 break
-        elif (isinstance(board[y][fileNum], Piece) == True and board[y][fileNum].color == board[rankNum][fileNum].color):
+        elif (isinstance(board[y][fileNum], Piece) and board[y][fileNum].color == board[rankNum][fileNum].color):
             break
 
     for y in range(rankNum + 1, 8):
-        if (isinstance(board[y][fileNum], Piece) == True and board[y][fileNum].color != board[rankNum][fileNum].color):
-            if (isinstance(board[y][fileNum], Rook) == True):
+        if (isinstance(board[y][fileNum], Piece) and board[y][fileNum].color != board[rankNum][fileNum].color):
+            if (isinstance(board[y][fileNum], Rook)):
                 return True
             else:
                 break
-        elif (isinstance(board[y][fileNum], Piece) == True and board[y][fileNum].color == board[rankNum][fileNum].color):
+        elif (isinstance(board[y][fileNum], Piece) and board[y][fileNum].color == board[rankNum][fileNum].color):
             break
 
     # Check for horizontal checks from rooks/queens
     for x in range(fileNum-1, -1, -1):
-        if (isinstance(board[rankNum][x], Piece) == True and board[rankNum][x].color != board[rankNum][fileNum].color):
-            if (isinstance(board[rankNum][x], Rook) == True):
+        if (isinstance(board[rankNum][x], Piece) and board[rankNum][x].color != board[rankNum][fileNum].color):
+            if (isinstance(board[rankNum][x], Rook)):
                 return True
             else:
                 break
-        elif (isinstance(board[rankNum][x], Piece) == True and board[rankNum][x].color == board[rankNum][fileNum].color):
+        elif (isinstance(board[rankNum][x], Piece) and board[rankNum][x].color == board[rankNum][fileNum].color):
             break
 
     for x in range(fileNum + 1, 8):
-        if (isinstance(board[rankNum][x], Piece) == True and board[rankNum][x].color != board[rankNum][fileNum].color):
-            if (isinstance(board[rankNum][x], Rook) == True):
+        if (isinstance(board[rankNum][x], Piece) and board[rankNum][x].color != board[rankNum][fileNum].color):
+            if (isinstance(board[rankNum][x], Rook)):
                 return True
             else:
                 break
-        elif (isinstance(board[rankNum][x], Piece) == True and board[rankNum][x].color == board[rankNum][fileNum].color):
+        elif (isinstance(board[rankNum][x], Piece) and board[rankNum][x].color == board[rankNum][fileNum].color):
             break
 
     # Check for diagonal checks from bishops/queens
@@ -359,7 +359,7 @@ def InCheck(board, coordinates):
             y -= 1
             x -= 1
         elif (board[y-1][x-1].color != board[rankNum][fileNum].color):
-            if (isinstance(board[y-1][x-1], Bishop) == True):
+            if (isinstance(board[y-1][x-1], Bishop)):
                 return True
             else:
                 break
@@ -374,7 +374,7 @@ def InCheck(board, coordinates):
             y -= 1
             x += 1
         elif (board[y-1][x+1].color != board[rankNum][fileNum].color):
-            if (isinstance(board[y-1][x+1], Bishop) == True):
+            if (isinstance(board[y-1][x+1], Bishop)):
                 return True
             else:
                 break
@@ -389,7 +389,7 @@ def InCheck(board, coordinates):
             y += 1
             x -= 1
         elif (board[y+1][x-1].color != board[rankNum][fileNum].color):
-            if (isinstance(board[y+1][x-1], Bishop) == True):
+            if (isinstance(board[y+1][x-1], Bishop)):
                 return True
             else:
                 break
@@ -404,7 +404,7 @@ def InCheck(board, coordinates):
             y += 1
             x += 1
         elif (board[y+1][x+1].color != board[rankNum][fileNum].color and isinstance(board[y+1][x+1], Bishop) == True):
-            if (isinstance(board[y+1][x+1], Bishop) == True):
+            if (isinstance(board[y+1][x+1], Bishop)):
                 return True
             else:
                 break
@@ -429,7 +429,7 @@ class Pawn(Piece):
     hasMoved = False
 
     def MoveList(self):
-        moves = set()
+        self.legalMoves.clear()
         kingCoord = ()
         if (self.color == True):
             kingCoord = self.board.whiteKing
@@ -448,7 +448,7 @@ class Pawn(Piece):
                     # Check to see if respective side's king is in check after the move
                     inCheck = InCheck(self.board.board, (kingCoord))
                     if (inCheck != True):
-                        moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 1), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 1), (8,8,73)))
 
                     # Change board back to original state
                     self.board.board[4][self.fileNum] = None
@@ -463,7 +463,7 @@ class Pawn(Piece):
                     # Check to see if respective side's king is in check after the move
                     inCheck = InCheck(self.board.board, (kingCoord))
                     if (inCheck != True):
-                        moves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 1), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 1), (8,8,73)))
 
                     # Change board back to original state
                     self.board.board[3][self.fileNum] = None
@@ -483,16 +483,16 @@ class Pawn(Piece):
                     if (self.rankNum == 1):
                         # Forward underpromotions
                         for x in [0, 67, 68, 69]:
-                            moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, x), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, x), (8,8,73)))
                     else:
-                        moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 0), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 0), (8,8,73)))
                 
                 # Change board back to original state
                 self.board.board[self.rankNum-1][self.fileNum] = None
                 self.board.board[self.rankNum][self.fileNum] = self
 
             # If left diagonal pawn capture squares contain black pieces, pawn can move there
-            if (self.fileNum - 1 >= 0 and isinstance(self.board.board[self.rankNum-1][self.fileNum-1], Piece) == True and self.board.board[self.rankNum-1][self.fileNum-1].color != self.color):
+            if (self.fileNum - 1 >= 0 and isinstance(self.board.board[self.rankNum-1][self.fileNum-1], Piece) and self.board.board[self.rankNum-1][self.fileNum-1].color != self.color):
                 piece = self.board.board[self.rankNum-1][self.fileNum-1]
 
                 # Change board as if the potential move was played
@@ -505,16 +505,16 @@ class Pawn(Piece):
                     # Left diagonal underpromotions
                     if (self.rankNum == 1):
                         for x in [49, 64, 65, 66]:
-                            moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, x), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, x), (8,8,73)))
                     else:
-                        moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 49), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 49), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum-1][self.fileNum-1] = piece
                 self.board.board[self.rankNum][self.fileNum] = self
             
             # If right diagonal pawn capture square contain black pieces, pawn can move there
-            if (self.fileNum + 1 <= 7 and isinstance(self.board.board[self.rankNum-1][self.fileNum+1], Piece) == True and self.board.board[self.rankNum-1][self.fileNum+1].color != self.color):
+            if (self.fileNum + 1 <= 7 and isinstance(self.board.board[self.rankNum-1][self.fileNum+1], Piece) and self.board.board[self.rankNum-1][self.fileNum+1].color != self.color):
                 piece = self.board.board[self.rankNum-1][self.fileNum+1]
 
                 # Change board as if the potential move was played
@@ -527,9 +527,9 @@ class Pawn(Piece):
                     # Right diagonal underpromotions
                     if (self.rankNum == 1):
                         for x in [7, 70, 71, 72]:
-                            moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, x), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, x), (8,8,73)))
                     else:
-                        moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 7), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 7), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum-1][self.fileNum+1] = piece
@@ -550,7 +550,7 @@ class Pawn(Piece):
                     self.board.board[self.rankNum][self.fileNum] = self
                     
                     if (inCheck != True):
-                        moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 49), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 49), (8,8,73)))
                 if (ord(self.board.lastMove[0]) - 97 == self.fileNum+1):
                     # Change board as if potential move was played
                     piece = self.board.board[self.rankNum-1][self.fileNum+1]
@@ -564,7 +564,7 @@ class Pawn(Piece):
                     self.board.board[self.rankNum][self.fileNum] = self
                     
                     if (inCheck != True):
-                        moves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 7), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((self.rankNum, self.fileNum, 7), (8,8,73)))
 
         # If pawn is black
         else:
@@ -580,16 +580,16 @@ class Pawn(Piece):
                     if (self.rankNum == 6):
                         # Forward underpromotions
                         for x in [0, 67, 68, 69]:
-                            moves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, x), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, x), (8,8,73)))
                     else:
-                        moves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 0), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 0), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum+1][self.fileNum] = None
                 self.board.board[self.rankNum][self.fileNum] = self
 
             # If right (from black POV) diagonal pawn capture squares contain black pieces, pawn can move there
-            if (self.fileNum - 1 >= 0 and isinstance(self.board.board[self.rankNum+1][self.fileNum-1], Piece) == True and self.board.board[self.rankNum+1][self.fileNum-1].color != self.color):
+            if (self.fileNum - 1 >= 0 and isinstance(self.board.board[self.rankNum+1][self.fileNum-1], Piece) and self.board.board[self.rankNum+1][self.fileNum-1].color != self.color):
                 piece = self.board.board[self.rankNum+1][self.fileNum-1]
 
                 # Change board as if the potential move was played
@@ -601,16 +601,16 @@ class Pawn(Piece):
                 if (inCheck != True):
                     if (self.rankNum == 6):
                         for x in [7, 70, 71, 72]:
-                            moves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, x), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, x), (8,8,73)))
                     else:
-                        moves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 7), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 7), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum+1][self.fileNum-1] = piece
                 self.board.board[self.rankNum][self.fileNum] = self
 
             # If left diagonal pawn capture (from black POV) contains white piece, black pawn can go there
-            if (self.fileNum + 1 <= 7 and isinstance(self.board.board[self.rankNum+1][self.fileNum+1], Piece) == True and self.board.board[self.rankNum+1][self.fileNum+1].color != self.color):
+            if (self.fileNum + 1 <= 7 and isinstance(self.board.board[self.rankNum+1][self.fileNum+1], Piece) and self.board.board[self.rankNum+1][self.fileNum+1].color != self.color):
                 piece = self.board.board[self.rankNum+1][self.fileNum+1]
 
                 # Change board as if the potential move was played
@@ -622,9 +622,9 @@ class Pawn(Piece):
                 if (inCheck != True):
                     if (self.rankNum == 6):
                         for x in [49, 64, 65, 66]:
-                            moves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, x), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, x), (8,8,73)))
                     else:
-                        moves.add(np.ravel_multi_index((7- self.rankNum, 7 - self.fileNum, 49), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((7- self.rankNum, 7 - self.fileNum, 49), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum+1][self.fileNum+1] = piece
@@ -645,7 +645,7 @@ class Pawn(Piece):
                     self.board.board[self.rankNum][self.fileNum] = self
                     
                     if (inCheck != True):
-                        moves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 7), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 7), (8,8,73)))
                 if (ord(self.board.lastMove[0]) - 97 == self.fileNum+1):
                     # Change board as if potential move was played
                     piece = self.board.board[self.rankNum+1][self.fileNum+1]
@@ -659,10 +659,9 @@ class Pawn(Piece):
                     self.board.board[self.rankNum][self.fileNum] = self
                     
                     if (inCheck != True):
-                        moves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 49), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((7 - self.rankNum, 7 - self.fileNum, 49), (8,8,73)))
         
-        self.legalMoves = moves
-        return moves
+        return self.legalMoves
 
 
 class King(Piece):
@@ -679,8 +678,7 @@ class King(Piece):
             self.board.blackKing = (self.rankNum, self.fileNum)
 
     def MoveList(self):
-        moves = set()
-
+        self.legalMoves.clear()
         # Alpha Zero move codes
         kingMoves = [(1, 1), (1, -1), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 0), (-1, 1)]
         blackMoveCodes = [49, 7, 0, 14, 42, 21, 28, 35]
@@ -697,7 +695,7 @@ class King(Piece):
             targetY = self.rankNum + kingMoves[x][0]
             targetX = self.fileNum + kingMoves[x][1]
             if ((targetX >= 0 and targetX <= 7) and (targetY >= 0 and targetY <= 7)):
-                if (isinstance(self.board.board[targetY][targetX], Piece) == True and self.board.board[targetY][targetX].color == self.color):
+                if (isinstance(self.board.board[targetY][targetX], Piece) and self.board.board[targetY][targetX].color == self.color):
                     continue
                 else:
                     # Change board as if potential move had been played
@@ -709,9 +707,9 @@ class King(Piece):
                     inCheck = InCheck(self.board.board, (targetY, targetX))
                     if (inCheck != True):
                         if (self.color == True):
-                            moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, whiteMoveCodes[x]), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, whiteMoveCodes[x]), (8,8,73)))
                         else:
-                            moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, blackMoveCodes[x]), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, blackMoveCodes[x]), (8,8,73)))
 
                     # Change board to original state
                     self.board.board[targetY][targetX] = piece
@@ -721,7 +719,7 @@ class King(Piece):
         # Check to see if white king can castle
         if (self.color == True and self.hasMoved == False):
             # Check kingside castle
-            if (isinstance(self.board.board[7][7], Rook) == True and self.board.board[7][7].hasMoved == False):
+            if (isinstance(self.board.board[7][7], Rook) and self.board.board[7][7].hasMoved == False):
                 if (self.board.board[7][5] is None and self.board.board[7][6] is None):
                     canCastle = True
                     for x in (5, 6):
@@ -739,9 +737,9 @@ class King(Piece):
 
                     if (canCastle == True):
                         # King can move 2 squares east from white POV
-                        moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, 15), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, 15), (8,8,73)))
             # Check queenside castle
-            if (isinstance(self.board.board[7][0], Rook) == True and self.board.board[7][0].hasMoved == False):
+            if (isinstance(self.board.board[7][0], Rook) and self.board.board[7][0].hasMoved == False):
                 if (self.board.board[7][3] is None and self.board.board[7][2] is None and self.board.board[7][1] is None):
                     canCastle = True
                     for x in (3, 2):
@@ -759,12 +757,12 @@ class King(Piece):
 
                     if (canCastle == True):
                         # King can move 2 squares west from white POV
-                        moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, 43), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, 43), (8,8,73)))
 
         # Check to see if black king can castle
         elif (self.color == False and self.hasMoved == False):
             # Check kingside castle
-            if (isinstance(self.board.board[0][7], Rook) == True and self.board.board[0][7].hasMoved == False):
+            if (isinstance(self.board.board[0][7], Rook) and self.board.board[0][7].hasMoved == False):
                 if (self.board.board[0][5] is None and self.board.board[0][6]is None):
                     canCastle = True
                     for x in (5, 6):
@@ -782,9 +780,9 @@ class King(Piece):
 
                     if (canCastle == True):
                         # King can move 2 squares west from black POV
-                        moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, 43), (8,8,73)))
+                        self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, 43), (8,8,73)))
             # Check queenside castle
-            if (isinstance(self.board.board[0][0], Rook) == True and self.board.board[0][0].hasMoved == False):
+            if (isinstance(self.board.board[0][0], Rook) and self.board.board[0][0].hasMoved == False):
                 if (self.board.board[0][3] is None and self.board.board[0][2] is None and self.board.board[0][1] is None):
                     canCastle = True
                     for x in (3, 2):
@@ -802,15 +800,14 @@ class King(Piece):
 
                     if (canCastle == True):
                         # King can move 2 squares east from black POV
-                        moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, 15), (8,8,73)))
-
-        self.legalMoves = moves
-        return moves
+                        self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, 15), (8,8,73)))
+        
+        return self.legalMoves
 
 
 class Bishop(Piece):
     def MoveList(self):
-        moves = set()
+        self.legalMoves.clear()
         kingCoord = ()
 
         flippedRankNum = self.rankNum
@@ -844,7 +841,7 @@ class Bishop(Piece):
                 # Check to see if respective king is in check
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y-1][x-1] = None
@@ -862,7 +859,7 @@ class Bishop(Piece):
                 # Check to see if respective king is in check
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y-1][x-1] = piece
@@ -893,7 +890,7 @@ class Bishop(Piece):
                 # Check to see if respective king is in check
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y-1][x+1] = None
@@ -909,7 +906,7 @@ class Bishop(Piece):
                 # Check to see if respective king is in check
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y-1][x+1] = piece
@@ -938,7 +935,7 @@ class Bishop(Piece):
                 # Check to see if respective king is in check
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y+1][x-1] = None
@@ -954,7 +951,7 @@ class Bishop(Piece):
                 # Check to see if respective king is in check
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y+1][x-1] = piece
@@ -983,7 +980,7 @@ class Bishop(Piece):
                 # Check to see if respective king is in check
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y+1][x+1] = None
@@ -1000,7 +997,7 @@ class Bishop(Piece):
                 # Check to see if respective king is in check
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y+1][x+1] = piece
@@ -1010,13 +1007,12 @@ class Bishop(Piece):
                 break
             moveCode+=1
 
-        self.legalMoves = moves
-        return moves
+        return self.legalMoves
 
 
 class Knight(Piece):
     def MoveList(self):
-        moves = set()
+        self.legalMoves.clear()
         kingCoord = ()
 
         knightMoves = [(-1, 2), (-1, -2), (1, 2), (1, -2), (2, 1), (2, -1), (-2, 1), (-2, -1)]
@@ -1048,22 +1044,21 @@ class Knight(Piece):
                     inCheck = InCheck(self.board.board, (kingCoord))
                     if (inCheck != True):
                         if (self.color == True):
-                            moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, whiteMoveCodes[x]), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, whiteMoveCodes[x]), (8,8,73)))
                         else:
-                            moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, blackMoveCodes[x]), (8,8,73)))
+                            self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, blackMoveCodes[x]), (8,8,73)))
                     
                     self.board.board[newRank][newFile] = piece
                     self.board.board[self.rankNum][self.fileNum] = self
 
-        self.legalMoves = moves
-        return moves
+        return self.legalMoves
 
 
 class Rook (Piece):
     hasMoved = False
 
     def MoveList(self):
-        moves = set()
+        self.legalMoves.clear()
         kingCoord = ()
 
         # Alpha Zero move encoding val
@@ -1096,7 +1091,7 @@ class Rook (Piece):
                 # Check to see if respective side king is in check after the move has been played
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y][self.fileNum] = None
@@ -1112,7 +1107,7 @@ class Rook (Piece):
                 # Check to see if respective side king is in check after the move has been played
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y][self.fileNum] = piece
@@ -1138,7 +1133,7 @@ class Rook (Piece):
                 # Check to see if respective side king is in check after the move has been played
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y][self.fileNum] = None
@@ -1153,7 +1148,7 @@ class Rook (Piece):
                 # Check to see if respective side king is in check after the move has been played
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[y][self.fileNum] = piece
@@ -1178,7 +1173,7 @@ class Rook (Piece):
                 # Check to see if respective side king is in check after the move has been played
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum][x] = None
@@ -1193,7 +1188,7 @@ class Rook (Piece):
                 # Check to see if respective side king is in check after the move has been played
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum][x] = piece
@@ -1217,7 +1212,7 @@ class Rook (Piece):
                 # Check to see if respective side king is in check after the move has been played
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum][x] = None
@@ -1231,7 +1226,7 @@ class Rook (Piece):
                 # Check to see if respective side king is in check after the move has been played
                 inCheck = InCheck(self.board.board, (kingCoord))
                 if (inCheck != True):
-                    moves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
+                    self.legalMoves.add(np.ravel_multi_index((flippedRankNum, flippedFileNum, moveCode), (8,8,73)))
 
                 # Change board back to original state
                 self.board.board[self.rankNum][x] = piece
@@ -1241,14 +1236,13 @@ class Rook (Piece):
                 break
             moveCode+=1
 
-        self.legalMoves = moves
-        return moves
+        return self.legalMoves
 
 
 class Queen(Bishop, Rook):
     def MoveList(self):
         # Queen moves are just a combination of the set of possible rook moves and possible bishop moves.
-        self.legalMoves = Bishop.MoveList(self) | Rook.MoveList(self)
+        self.legalMoves = Bishop.MoveList(self).copy() | Rook.MoveList(self).copy()
         return self.legalMoves
 
 
@@ -1477,31 +1471,31 @@ class Board ():
             piece = self.board[7 - rankNum][7 - fileNum]
             moveInfo = (moveInfo[0] * -1, moveInfo[1] * -1)
         else:
-            prefix += str(self.totalMoves) + ". "
+            prefix = "".join([str(self.totalMoves), ". "])
         
         if (isinstance(piece, King) == True):
-            prefix += "K"
+            prefix = "".join([prefix, "K"])
         elif (isinstance(piece, Queen) == True):
-            prefix += "Q"
+            prefix = "".join([prefix, "Q"])
         elif (isinstance(piece, Rook) == True):
-            prefix += "R"
+            prefix = "".join([prefix, "R"])
         elif (isinstance(piece, Bishop) == True):
-            prefix += "B"
+            prefix = "".join([prefix, "B"])
         elif (isinstance(piece, Knight) == True):
-            prefix += "N"
+            prefix = "".join([prefix, "N"])
         elif (isinstance (piece, Pawn) == True and takes == True):
-            prefix += files[piece.fileNum]
+            prefix = "".join([prefix, files[piece.fileNum]])
 
         # Castling
         if (isinstance(piece, King) == True):
             if (moveCode == 15):
                 if (self.whiteToMove == True):
-                    return str(self.totalMoves) + ". 0-0 "
+                    return "".join([str(self.totalMoves), ". 0-0 "])
                 else:
                     return "0-0-0 "
             elif (moveCode == 43):
                 if (self.whiteToMove == True):
-                    return str(self.totalMoves) + ". 0-0-0 "
+                    return "".join([str(self.totalMoves), ". 0-0-0 "])
                 else:
                     return "0-0 "
 
@@ -1512,6 +1506,8 @@ class Board ():
         sameCol = False
 
         # Disambiguating moves
+
+        # Knights
         if (isinstance(piece, Knight)):
             # Checks for other knights that can go to same square
             for dy, dx in ((-1, 2), (-1, -2), (1, 2), (1, -2), (2, 1), (2, -1), (-2, 1), (-2, -1)):
@@ -1525,55 +1521,60 @@ class Board ():
                         if (xCoord == piece.fileNum):
                             sameCol = True
 
+        # Rooks
         if (isinstance(piece, Rook)):
             # Check for other rooks on same file (up the board from white POV)
-            for y in range(piece.rankNum - 1, -1, -1):
-                if (self.board[y][piece.fileNum] != None):
-                    if (isinstance(self.board[y][piece.fileNum], Rook) and self.board[y][piece.fileNum].color == piece.color):
-                        if (type(piece) == type(self.board[y][piece.fileNum])):
+            for y in range(targetY - 1, -1, -1):
+                if (self.board[y][targetX] is not None):
+                    if (isinstance(self.board[y][targetX], Rook) and self.board[y][targetX].color == piece.color and (y, targetX) != (piece.rankNum, piece.fileNum)):
+                        if (type(piece) == type(self.board[y][targetX])):
                             samePiece = True
-                            sameCol = True
+                            if (targetX == piece.fileNum):
+                                sameCol = True
                     else:
                         break
             
             # Check for other rooks on same file (down the board from white POV)
-            for y in range (piece.rankNum + 1, 8):
-                if (self.board[y][piece.fileNum] != None):
-                    if (isinstance(self.board[y][piece.fileNum], Rook) and self.board[y][piece.fileNum].color == piece.color):
-                        if (type(piece) == type(self.board[y][piece.fileNum])):
+            for y in range (targetY + 1, 8):
+                if (self.board[y][targetX] is not None):
+                    if (isinstance(self.board[y][targetX], Rook) and self.board[y][targetX].color == piece.color and (y, targetX) != (piece.rankNum, piece.fileNum)):
+                        if (type(piece) == type(self.board[y][targetX])):
                             samePiece = True
-                            sameCol = True
+                            if (targetX == piece.fileNum):
+                                sameCol = True
                     else:
                         break
             
             # Check for rooks on same rank to left of current piece (from white POV)
-            for x in range (piece.fileNum -1, -1, -1):
-                if (self.board[piece.rankNum][x] != None):
-                    if (isinstance(self.board[piece.rankNum][x], Rook) and self.board[piece.rankNum][x].color == piece.color):
-                        if (type(piece) == type (self.board[piece.rankNum][x])):
+            for x in range (targetX -1, -1, -1):
+                if (self.board[piece.rankNum][x] is not None):
+                    if (isinstance(self.board[targetY][x], Rook) and self.board[targetY][x].color == piece.color and (targetY, x) != (piece.rankNum, piece.fileNum)):
+                        if (type(piece) == type (self.board[targetY][x])):
                             samePiece = True
-                            sameRow = True
+                            if (targetY == piece.rankNum):
+                                sameRow = True
                     else:
                         break
             
             # Check for rooks on same rank to the right of current piece (from white POV)
-            for x in range (piece.fileNum + 1, 8):
-                if (self.board[piece.rankNum][x] != None):
-                    if (isinstance(self.board[piece.rankNum][x], Rook) and self.board[piece.rankNum][x].color == piece.color):
-                        if (type(piece) == type (self.board[piece.rankNum][x])):
+            for x in range (targetX + 1, 8):
+                if (self.board[targetY][x] is not None):
+                    if (isinstance(self.board[targetY][x], Rook) and self.board[targetY][x].color == piece.color and (targetY, x) != (piece.rankNum, piece.fileNum)):
+                        if (type(piece) == type (self.board[targetY][x])):
                             samePiece = True
-                            sameRow = True
+                            if (targetY == piece.rankNum):
+                                sameRow = True
                     else:
                         break
         
-        # DO THE BISHOP DISAMBIGUIATING HERE
+        # Bishops
         if (isinstance(piece, Bishop)):
             x = targetX + 1
             y = targetY - 1
 
             # Check for bishops on the north east diagonal (white POV)
             while (x <= 7 and y >= 0):
-                if (self.board[y][x] != None):
+                if (self.board[y][x] is not None):
                     if (self.board[y][x].color == piece.color and isinstance(self.board[y][x], Bishop) and (y, x) != (piece.rankNum, piece.fileNum)):
                         if (type(self.board[y][x]) == type(piece)):
                             samePiece = True
@@ -1592,7 +1593,7 @@ class Board ():
 
             # Check for bishops on the north west diagonal (white POV)
             while (x >= 0 and y >= 0):
-                if (self.board[y][x] != None):
+                if (self.board[y][x] is not None):
                     if (self.board[y][x].color == piece.color and isinstance(self.board[y][x], Bishop) and (y, x) != (piece.rankNum, piece.fileNum)):
                         if (type(self.board[y][x]) == type(piece)):
                             samePiece = True
@@ -1610,7 +1611,7 @@ class Board ():
 
             # Check for bishops on the south east diagonal (white POV)
             while (x <= 7 and y <= 7):
-                if (self.board[y][x] != None):
+                if (self.board[y][x] is not None):
                     if (self.board[y][x].color == piece.color and isinstance(self.board[y][x], Bishop) and (y, x) != (piece.rankNum, piece.fileNum)):
                         if (type(self.board[y][x]) == type(piece)):
                             samePiece = True
@@ -1628,7 +1629,7 @@ class Board ():
 
             # Check for bishops on the south west diagonal (white POV)
             while (x >= 0 and y <= 7):
-                if (self.board[y][x] != None):
+                if (self.board[y][x] is not None):
                     if (self.board[y][x].color == piece.color and isinstance(self.board[y][x], Bishop) and (y, x) != (piece.rankNum, piece.fileNum)):
                         if (type(self.board[y][x]) == type(piece)):
                             samePiece = True
@@ -1643,27 +1644,27 @@ class Board ():
 
         if (samePiece == True):
             if (sameCol == True and sameRow == True):
-                prefix += files[piece.fileNum] + str(8 - piece.rankNum)
+                prefix = "".join([prefix, files[piece.fileNum], str(8 - piece.rankNum)])
             elif (sameCol == True):
-                prefix += str(8 - piece.rankNum)
+                prefix = "".join([prefix, str(8 - piece.rankNum)])
             else:
-                prefix += files[piece.fileNum]
+                prefix = "".join([prefix, files[piece.fileNum]])
 
         if (takes == True):
-            prefix += "x"
+            prefix = "".join([prefix, "x"])
 
-        if (isinstance(piece, Pawn) == True):
+        if (isinstance(piece, Pawn)):
             if ((piece.color == True and piece.rankNum == 1) or (piece.color == False and piece.rankNum == 6)):
                 if (moveCode == 0 or moveCode == 7 or moveCode == 49):
-                    return prefix + files[targetX] + str(8 - (targetY)) + "Q"
+                    return "".join([prefix, files[targetX], str(8 - targetY), "Q"])
                 elif (moveCode == 64 or moveCode == 67 or moveCode == 70):
-                    return prefix + files[targetX] + str(8 - (targetY)) + "N"
+                    return "".join([prefix, files[targetX], str(8 - targetY), "N"])
                 elif (moveCode == 65 or moveCode == 68 or moveCode == 71):
-                    return prefix + files[targetX] + str(8 - (targetY)) + "B"
+                    return "".join([prefix, files[targetX], str(8 - targetY), "B"])
                 elif (moveCode == 66 or moveCode == 69 or moveCode == 72):
-                    return prefix + files[targetX] + str(8 - (targetY)) + "R"
+                    return "".join([prefix, files[targetX], str(8 - targetY), "R"])
                 
-        return prefix + files[targetX] + str(8 - (targetY))
+        return "".join([prefix, files[targetX], str(8 - targetY)])
 
     # Moves piece on the board, returns true if move was completed (and consequently legal) and false if move was not able
     # to be completed (move was illegal or the coordinates provided did not contain a piece). potentialMove is from the POV of
@@ -1682,7 +1683,6 @@ class Board ():
         # If the game isn't over at this moment, then proceed in determining whether the move is legal or not
         if (self.gameState == 0):
             if (potentialMove in self.allLegalMoves):
-                print (potentialMove)
                 takes = False
                 move = np.unravel_index(potentialMove, (8,8,73))
                 moveInfo = self.moveDecoder[move[2]] # Tuple of (dy, dx) for move
@@ -1707,7 +1707,7 @@ class Board ():
                 
 
                 # If piece is a king and it is castling (abs(moveInfo[1])) == 2 
-                if (isinstance(piece, King) == True and abs(moveInfo[1]) == 2):
+                if (isinstance(piece, King) and abs(moveInfo[1]) == 2):
                     # Castling
                     # Dx of 2 from white POV mean's go east, to go east from black's POV dx is -2
                     if (moveInfo[1] == 2):
@@ -1813,12 +1813,12 @@ class Board ():
                         self.board[piece.rankNum + moveInfo[0]][piece.fileNum+moveInfo[1]] = Rook (False, piece.rankNum + moveInfo[0], piece.fileNum+moveInfo[1], self)  
                     self.board[piece.rankNum][piece.fileNum] = None            
                 else:
-                    if (isinstance(piece, (King, Rook, Pawn)) == True and piece.hasMoved == False):
+                    if (isinstance(piece, (King, Rook, Pawn)) and piece.hasMoved == False):
                         piece.hasMoved = True
                     
                     # En passant moves, diagonal move will result in pawn "capturing" on empty square, need to remove the
                     # pawn that was caputred en passant
-                    if (isinstance(piece, Pawn) == True and (move[2] == 49 or move[2] == 7) and self.board[piece.rankNum + moveInfo[0]][piece.fileNum+moveInfo[1]] is None):
+                    if (isinstance(piece, Pawn) and (move[2] == 49 or move[2] == 7) and self.board[piece.rankNum + moveInfo[0]][piece.fileNum+moveInfo[1]] is None):
                         if (piece.color == True):
                             takes = True
                             self.lastMove = self.CoordToAlgebraic(move, takes)
@@ -1902,31 +1902,31 @@ class Board ():
         canMove = False
         for row in self.board:
             for piece in row:
-                if (isinstance(piece, Piece) == True):
+                if (isinstance(piece, Piece)):
                     if (piece.color == self.whiteToMove and len(piece.MoveList()) != 0):
                         canMove = True
                         self.allLegalMoves = self.allLegalMoves | piece.legalMoves
-                if (isinstance(piece, Queen) == True):
+                if (isinstance(piece, Queen)):
                     if (piece.color == True):
                         whiteQueenCount += 1
                     else:
                         blackQueenCount += 1
-                elif (isinstance(piece, Bishop) == True):
+                elif (isinstance(piece, Bishop)):
                     if (piece.color == True):
                         whiteBishopCount += 1
                     else:
                         blackBishopCount += 1
-                elif (isinstance(piece, Rook) == True):
+                elif (isinstance(piece, Rook)):
                     if (piece.color == True):
                         whiteRookCount += 1
                     else:
                         blackRookCount += 1
-                elif (isinstance(piece, Knight) == True):
+                elif (isinstance(piece, Knight)):
                     if (piece.color == True):
                         whiteKnightCount += 1
                     else:
                         blackKnightCount += 1
-                elif (isinstance(piece, Pawn) == True):
+                elif (isinstance(piece, Pawn)):
                     if (piece.color == True):
                         whitePawnCount += 1
                     else:
@@ -1935,11 +1935,11 @@ class Board ():
         if (canMove == False):
             # If no piece of the side passed can move and the king is in check, it is checkmate
             if (inCheck == True):
-                self.listOfMoves[-1] += "#"
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "#"])
                 return 1
             # If no piece of the side passed can move and the king is not in check, it is stalemate
             else:
-                self.listOfMoves[-1] += "1/2-1/2"
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
                 return -1
 
         # Check if potential insufficient material remains, if there are pawns, rooks, or queens on the board then the game
@@ -1949,29 +1949,29 @@ class Board ():
             insufficientMatRemaining = True
         else:
             if (inCheck == True):
-                self.listOfMoves[-1] += "+"
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "+"])
             return 0
 
         if (insufficientMatRemaining == True):
             # Game is drawn if there are no bishops and there are ONLY 1 or less knights on either side in the gameq
             if ((whiteBishopCount == 0 and blackBishopCount == 0) and (whiteKnightCount < 2 and blackKnightCount < 2)):
-                self.listOfMoves[-1] += "1/2-1/2"
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
                 return -1
             # Game is drawn if there are no knights and there are ONLY 1 or less knights on either side in the game
             if ((whiteKnightCount == 0 and blackKnightCount == 0) and (whiteBishopCount < 2 and blackBishopCount < 2)):
-                self.listOfMoves[-1] += "1/2-1/2"
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
                 return -1
             # Game is drawn if there is only 2 knights vs a king
             if ((whiteKnightCount == 2 and blackBishopCount == 0) or (whiteBishopCount == 0 and blackKnightCount == 2)):
-                self.listOfMoves[-1] += "1/2-1/2"
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
                 return -1
             # Game is drawn if it's just 1 white knight vs only one black bishop
             if ((whiteKnightCount == 1 and whiteBishopCount == 0) and (blackBishopCount == 1 and blackKnightCount == 0)):
-                self.listOfMoves[-1] += "1/2-1/2"
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
                 return -1
             # Game is drawn if it's just one white bishop vs only one black knight
             if ((whiteBishopCount == 1 and whiteKnightCount == 0) and (blackBishopCount == 0 and blackKnightCount == 1)):
-                self.listOfMoves[-1] += "1/2-1/2"
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
                 return -1
 
         # If none of the previous conditions are met, the game continues
