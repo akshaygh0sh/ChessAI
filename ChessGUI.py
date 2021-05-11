@@ -137,7 +137,6 @@ def Play (board, screen, flipped):
     squareClicked = ()
 
     running = True
-    sum = 0
     while (running == True):
         clock.tick(FPS)
         if (board.gameState != 0):
