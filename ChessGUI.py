@@ -137,6 +137,7 @@ def Play (board, screen, flipped):
     squareClicked = ()
 
     running = True
+    sum = 0
     while (running == True):
         clock.tick(FPS)
         if (board.gameState != 0):
@@ -316,13 +317,11 @@ def Play (board, screen, flipped):
                             
                         moveTuple = (rankNum, fileNum, moveCode)
                         start_time = time.time()
-                        # print ("Move Tuple:", moveTuple)
-                        # print ("Move Code: ", np.ravel_multi_index((moveTuple), (8,8,73)))
                         board.Move(np.ravel_multi_index((moveTuple), (8,8,73)))
-
-                        print (ChessGame.Eval(board, color = board.whiteToMove))
-                        
+                        evaluation = ChessGame.Eval(board, color = board.whiteToMove)
                         end_time = time.time()
+                        
+                        print (evaluation)
                         print ("Calculated in " + str(end_time-start_time) + " seconds.")
                         squareClicked = ()
                         lastMove.clear()
@@ -346,6 +345,7 @@ def Play (board, screen, flipped):
     # If stalemate, print message stating game is drawn
     if (board.gameState == -1):
         print ("GAME IS DRAWN.")
+    
 
 def main ():
     screen = pygame.display.set_mode((640,640), pygame.RESIZABLE, pygame.SRCALPHA)
