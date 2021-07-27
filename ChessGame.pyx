@@ -1905,6 +1905,7 @@ cdef class Board ():
         if (boardCode in self.repetitions):
             self.repetitions[boardCode] +=1
             if (self.repetitions[boardCode] >= 3):
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], " 1/2-1/2"])
                 return -1, eval
         else:
             self.repetitions[boardCode] = 1
