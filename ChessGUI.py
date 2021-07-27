@@ -313,18 +313,23 @@ def Play (board, screen, flipped):
                             DrawPieces(board, screen, flipped)
                             pygame.display.update()
                             continue
-                            
+                        
+                        
+
                         moveTuple = (rankNum, fileNum, moveCode)
                         start_time = time.time()
-                        board.Move(np.ravel_multi_index((moveTuple), (8,8,73)))
-                        evaluation = ChessGame.Eval(board, color = board.whiteToMove)
+                        board.Move(np.ravel_multi_index((moveTuple), (8,8,73)))  
+                        print (board.eval) 
+                        whitePOV, blackPOv = board.GetBoard()
                         end_time = time.time()
                         
-                        print (evaluation)
+                        
+                        print ("Move: ", str(np.ravel_multi_index((moveTuple), (8,8,73))))
                         print ("Calculated in " + str(end_time-start_time) + " seconds.")
                         squareClicked = ()
                         lastMove.clear()
                         DrawPieces(board, screen, flipped)
+                        
             elif (pygame.mouse.get_pressed()[2] == True):
                 squareClicked = ()
                 lastMove.clear()
