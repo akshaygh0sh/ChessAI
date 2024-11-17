@@ -1245,10 +1245,7 @@ class Queen(Bishop, Rook):
         self.legalMoves = Bishop.MoveList(self).copy() | Rook.MoveList(self).copy()
         return self.legalMoves
 
-
 class Board ():
-    
-
     def __init__(self):
         board = []
         # Initalize board to 8 by 8
@@ -1293,9 +1290,13 @@ class Board ():
         self.lastMove = ""
         self.totalMoves = 1
         self.whiteToMove = True
-        self.gameState = 0
-        self.lastCapture = 0
+        self.lastCapture = 1
         self.allLegalMoves = set ()
+        self.repetitions = {}
+        self.gameState, self.eval = self.GameOver()
+
+        self.blackPOV = np.zeros(shape = (5,8,8,14), dtype = np.float32)
+        self.whitePOV = np.zeros(shape = (5,8,8,14), dtype = np.float32)
 
         # Move decoder takes move codes and turns them into their respective move tuples
         self.moveDecoder = dict ()
@@ -1673,7 +1674,7 @@ class Board ():
         # If it is the first move, need to generate the set of all legal moves for white (if not first move, this is done at the)
         # end of this function
         if (self.totalMoves == 1):
-            self.gameState = self.GameOver()
+            self.gameState, self.eval = self.GameOver()
 
         # if (self.whiteToMove == True):
         #     print ("White's Moves:" , self.allLegalMoves)
@@ -1861,7 +1862,7 @@ class Board ():
                 self.whiteToMove = not self.whiteToMove
                 self.listOfMoves.append(self.lastMove)
                 # Test if game is over for the opposing side (and thereby generating legal moves for that side)
-                self.gameState = self.GameOver()
+                self.gameState, self.eval = self.GameOver()
                 return True
             else:
                 return False
@@ -1872,110 +1873,415 @@ class Board ():
     #  or drawn by insufficient material on the board, returns 1 if game ends in checkmate
     #  for the side that the function is called with, and returns 0 if the game continues.
     def GameOver(self):
-        # 50 move rule for draws, if 50 moves have passed since last capture or pawn move game is automatically drawn
-        if (self.totalMoves - self.lastCapture >= 50):  
-            return -1
+        # Piece tables
+        WHITE_BISHOP_MG = np.array([
+            [ -30,   5,  -80,  -35,  -25,  -40,    5,  -10],
+            [ -25,  15,  -20,  -15,   30,   60,   20,  -45],
+            [ -15,  35,   45,   40,   35,   50,   35,    0],
+            [  -5,   5,   20,   50,   35,   35,    5,    0],
+            [  -5,  15,   15,   25,   35,   10,   10,    5],
+            [   0,  15,   15,   15,   15,   25,   20,   10],
+            [   5,  15,   15,    0,    5,   20,   35,    0],
+            [ -35,  -5,  -15,  -20,  -15,  -15,  -40,  -20],
+        ])
 
+        BLACK_BISHOP_MG = np.flip(WHITE_BISHOP_MG, axis = 0)
+
+        WHITE_BISHOP_EG = np.array([
+            [ -15,  -20,  -10,  -10,   -5,  -10,  -15,  -25],
+            [ -10,   -5,    5,  -10,   -5,  -15,   -5,  -15],
+            [   0,  -10,    0,    0,    0,    5,    0,    5],
+            [  -5,   10,   10,   10,   15,   10,    5,    0],
+            [  -5,    5,   15,   20,   10,   10,   -5,  -10],
+            [ -10,   -5,   10,   10,   15,    5,   -5,  -15],
+            [ -15,  -20,   -5,    0,    5,  -10,  -15,  -30],
+            [ -25,  -10,  -25,   -5,  -10,  -15,   -5,  -15],
+        ])
+
+        BLACK_BISHOP_EG = np.flip(WHITE_BISHOP_EG, axis = 0)
+
+        WHITE_KNIGHT_MG = np.array([
+            [ -165,  -90,  -35,  -50,   60,  -95, -15, -105],
+            [  -75,  -40,   70,   35,   25,   60,   5,  -15],
+            [  -45,   60,   35,   65,   85,  130,  75,   45],
+            [  -10,   15,   20,   55,   35,   70,  20,   20],
+            [  -15,    5,   15,   15,   30,   20,  20,  -10],
+            [  -25,  -10,   10,   10,   20,   15,  25,  -15],
+            [  -30,  -55,  -10,   -5,   0,    20, -15,  -20],
+            [ -105,  -20,  -60,  -35,  -15,  -30, -20,  -25]
+        ])
+
+        BLACK_KNIGHT_MG = np.flip(WHITE_KNIGHT_MG, axis = 0)
+
+        WHITE_KNIGHT_EG = np.array([
+            [ -60,  -40,  -15,  -30,  -30,  -25,  -65, -100],
+            [ -25,  -10,  -25,    0,  -10,  -25,  -25,  -50],
+            [ -25,  -20,   10,   10,    0,  -10,  -20,  -40],
+            [ -15,    5,   20,   20,   20,   10,   10,  -20],
+            [ -20,   -5,   15,   25,   15,   15,    5,  -20],
+            [ -25,   -5,    0,   15,   10,   -5,  -20,  -20],
+            [ -40,  -20,  -10,   -5,    0,  -20,  -25,  -45],
+            [ -30,  -50,  -25,  -15,  -20,  -20,  -50,  -65]
+        ])
+
+        BLACK_KNIGHT_EG = np.flip(WHITE_KNIGHT_EG, axis = 0)
+
+        WHITE_ROOK_MG = np.array([
+            [ 30,   40,   30,   50,   65,   10,   30,   45],
+            [ 30,   30,   60,   60,   80,   65,   25,   45],
+            [ -5,   20,   25,   35,   15,   45,   60,   15],
+            [-25,  -10,    5,   25,   25,   35,  -10,  -20],
+            [-35,  -25,  -10,    0,   10,   -5,    5,  -25],
+            [-45,  -25,  -15,  -15,    5,    0,   -5,  -35],
+            [-45,  -15,  -20,  -10,    0,   10,   -5,  -70],
+            [-20,  -15,    0,   15,   15,    5,  -35,  -25]
+        ])
+
+        BLACK_ROOK_MG = np.flip(WHITE_ROOK_MG, axis = 0)
+
+        WHITE_ROOK_EG = np.array([
+            [ 15,  10,  20,  15,  10,   10,   10,   5],
+            [ 10,  15,  15,  10,  -5,    5,   10,   5],
+            [  5,   5,   5,   5,   5,   -5,   -5,  -5],
+            [  5,   5,  15,   0,   0,    0,    0,   0],
+            [  5,   5,  10,   5,  -5,   -5,  -10, -10],
+            [ -5,   0,  -5,   0,  -5,  -10,  -10, -15],
+            [ -5,  -5,   0,   5, -10,  -10,  -10,  -5],
+            [-10,   0,   5,   0,  -5,  -15,    5, -20]
+        ])
+
+        BLACK_ROOK_EG = np.flip(WHITE_ROOK_EG, axis = 0)
+
+        WHITE_PAWN_MG = np.array([
+            [  0,   0,   0,   0,   0,   0,   0,   0],
+            [100, 135,  60,  95,  70, 125,  35, -10],
+            [ -5,  10,  25,  30,  70,  55,  25, -20],
+            [-15,  15,   5,  20,  25,  10,  15, -25],
+            [-25,   0,  -5,  10,  15,   5,  10, -25],
+            [-25,  -5,  -5, -10,   5,   5,  35, -10],
+            [-35,   0, -20, -25, -15,  25,  40, -20],
+            [  0,   0,   0,   0,   0,   0,   0,   0]
+        ])
+
+        BLACK_PAWN_MG = np.flip(WHITE_PAWN_MG, axis = 0)
+
+        WHITE_PAWN_EG = np.array([
+            [  0,   0,   0,   0,   0,   0,   0,   0],
+            [180, 170, 160, 145, 145, 160, 170, 190],
+            [ 10,  10,  20,  30,  30,  20,  10,  10],
+            [  5,   5,  10,  25,  25,  10,   5,   5],
+            [  0,   0,   0,  20,  20,   0,   0,   0],
+            [  5,  -5, -10,   0,   0, -10,  -5,   5],
+            [ 15,  10,  10, -20, -20,  10,  10,   5],
+            [  0,   0,   0,   0,   0,   0,   0,   0]
+        ])
+
+        BLACK_PAWN_EG = np.flip(WHITE_PAWN_EG, axis = 0)
+
+        WHITE_QUEEN_MG = np.array([
+            [ -30,    0,   30,   10,   60,   45,   45,   45],
+            [ -25,  -40,   -5,    0,  -15,   55,   30,   55],
+            [ -15,  -15,   10,   10,   30,   55,   45,   55],
+            [ -30,  -30,  -15,  -15,    0,   15,    0,    0],
+            [ -10,  -25,  -10,  -10,    0,   -5,    5,   -5],
+            [ -15,    0,  -10,    0,   -5,    0,   15,    5],
+            [ -35,  -10,   10,    0,   10,   15,   -5,    0],
+            [   0,  -20,  -10,   10,  -15,  -25,  -30,  -50]
+        ])
+
+        BLACK_QUEEN_MG = np.flip(WHITE_QUEEN_MG, axis = 0)
+
+        WHITE_QUEEN_EG = np.array([
+            [ -10,   20,   20,   25,   25,   20,   10,   20],
+            [ -15,   20,   30,   40,   60,   25,   30,    0],
+            [ -20,    5,   10,   50,   45,   35,   20,   10],
+            [   5,   20,   25,   45,   55,   40,   55,   35],
+            [ -20,   30,   20,   45,   30,   35,   40,   25],
+            [ -15,  -25,   15,    5,   10,   15,   10,    5],
+            [ -20,  -25,  -30,  -15,  -15,  -25,  -35,  -30],
+            [ -35,  -30,  -20,  -45,   -5,  -30,  -20,  -40]
+        ])
+
+        BLACK_QUEEN_EG = np.flip(WHITE_QUEEN_EG, axis = 0)
+
+        WHITE_KING_MG = np.array([
+            [ -65,   25,   15,  -15,  -55,  -35,    0,   15],
+            [  30,    0,  -20,   -5,  -10,   -5,  -40,  -30],
+            [ -10,   25,    0,  -15,  -20,    5,   20,  -20],
+            [ -15,  -20,  -10,  -30,  -30,  -25,  -15,  -35],
+            [ -50,    0,  -25,  -40,  -45,  -45,  -35,  -50],
+            [ -15,  -15,  -20,  -45,  -45,  -30,  -15,  -25],
+            [   0,    5,  -10,  -65,  -45,  -15,   10,   10],
+            [ -15,   35,   10,  -55,   10,  -30,   25,   15]
+        ])
+
+        BLACK_KING_MG = np.flip(WHITE_KING_MG, axis = 0)
+
+        WHITE_KING_EG = np.array([
+            [ -75,  -35,  -20,  -20,  -10,   15,    5,  -15],
+            [ -10,   20,   15,   15,   15,   40,   25,   10],
+            [  10,   20,   25,   15,   20,   45,   45,   15],
+            [ -10,   20,   25,   25,   25,   35,   25,    5],
+            [ -20,   -5,   20,   25,   25,   25,   10,  -10],
+            [ -20,   -5,   10,   20,   25,   15,    5,  -10],
+            [ -25,  -10,    5,   15,   15,    5,   -5,  -15],
+            [ -55,  -35,  -20,  -10,  -30,  -15,  -25,  -45]
+        ])
+
+        BLACK_KING_EG = np.flip(WHITE_KING_EG, axis = 0)
+        # Alpha Zero piece values
+        QUEEN_VAL = 950
+        ROOK_VAL = 563
+        BISHOP_VAL = 330
+        KNIGHT_VAL = 305
+        PAWN_VAL = 100
+        
         # Set legalMoves to empty set, then calculate all legal moves
-        self.allLegalMoves = set()
+        self.allLegalMoves.clear()
 
-        whiteRookCount = 0
         whiteKnightCount = 0
+        whiteRookCount = 0
         whiteBishopCount = 0
         whitePawnCount = 0
-        whiteQueenCount = 0
-
+        whiteQueenCount = 0        
         blackRookCount = 0
         blackKnightCount = 0
         blackBishopCount = 0
         blackPawnCount = 0
         blackQueenCount = 0
 
-        kingCoords = ()
         if (self.whiteToMove == True):
             kingCoords = self.whiteKing
         else:
             kingCoords = self.blackKing
 
         inCheck = InCheck(self.board, kingCoords)
-        # Count pieces and check to see whether piece can move
-        canMove = False
-        for row in self.board:
-            for piece in row:
-                if (isinstance(piece, Piece)):
-                    if (piece.color == self.whiteToMove and len(piece.MoveList()) != 0):
-                        canMove = True
-                        self.allLegalMoves = self.allLegalMoves | piece.legalMoves
-                if (isinstance(piece, Queen)):
-                    if (piece.color == True):
-                        whiteQueenCount += 1
-                    else:
-                        blackQueenCount += 1
-                elif (isinstance(piece, Bishop)):
-                    if (piece.color == True):
-                        whiteBishopCount += 1
-                    else:
-                        blackBishopCount += 1
-                elif (isinstance(piece, Rook)):
-                    if (piece.color == True):
-                        whiteRookCount += 1
-                    else:
-                        blackRookCount += 1
-                elif (isinstance(piece, Knight)):
-                    if (piece.color == True):
-                        whiteKnightCount += 1
-                    else:
-                        blackKnightCount += 1
-                elif (isinstance(piece, Pawn)):
-                    if (piece.color == True):
-                        whitePawnCount += 1
-                    else:
-                        blackPawnCount += 1
 
+        # See whether a piece can move
+        canMove = False
+
+        # Index to piece 0 : Pawn, 1 : Knight, 2 : Bishop, 3 : Rook, 4 : Queen, 5: King
+        WHITE_PIECE_SQUARES = []
+        BLACK_PIECE_SQUARES = []
+        if (self.totalMoves < 20):
+            WHITE_PIECE_SQUARES = [WHITE_PAWN_MG, WHITE_KNIGHT_MG, WHITE_BISHOP_MG, WHITE_ROOK_MG, WHITE_QUEEN_MG, WHITE_KING_MG]
+            BLACK_PIECE_SQUARES = [BLACK_PAWN_MG, BLACK_KNIGHT_MG, BLACK_BISHOP_MG, BLACK_ROOK_MG, BLACK_QUEEN_MG, BLACK_KING_MG]
+        else:
+            WHITE_PIECE_SQUARES = [WHITE_PAWN_EG, WHITE_KNIGHT_EG, WHITE_BISHOP_EG, WHITE_ROOK_EG, WHITE_QUEEN_EG, WHITE_KING_EG]
+            BLACK_PIECE_SQUARES = [BLACK_PAWN_EG, BLACK_KNIGHT_EG, BLACK_BISHOP_EG, BLACK_ROOK_EG, BLACK_QUEEN_EG, BLACK_KING_EG]
+
+        STACKED_PENALTY = 0
+        if (self.totalMoves < 15):
+            STACKED_PENALTY = 2
+        else:
+            STACKED_PENALTY = 1.9
+
+        whiteEval = 0
+        blackEval = 0
+
+        eval = 0
+        boardCode = ""
+
+        for col in range(0, 8):
+            stackedWhitePawns = 0
+            stackedBlackPawns = 0
+            for row in range(0, 8):
+                if (isinstance(self.board[row][col], Piece)):
+                    self.board[row][col].MoveList()
+                    if (self.board[row][col].color == self.whiteToMove and len(self.board[row][col].legalMoves) != 0):
+                        canMove = True
+                        self.allLegalMoves = self.allLegalMoves | self.board[row][col].legalMoves
+                    if (isinstance(self.board[row][col], Queen)):
+                        if (self.board[row][col].color == True):
+                            whiteEval += QUEEN_VAL + WHITE_PIECE_SQUARES[4][row][col]
+                            boardCode = "".join([boardCode, "Q"])
+                            whiteQueenCount +=1
+                        else:
+                            blackEval += QUEEN_VAL + BLACK_PIECE_SQUARES[4][row][col]
+                            boardCode = "".join([boardCode, "q"])
+                            blackQueenCount+=1
+                    elif (isinstance(self.board[row][col], Bishop)):
+                        if (self.board[row][col].color == True):
+                            whiteEval += BISHOP_VAL + WHITE_PIECE_SQUARES[2][row][col]
+                            boardCode = "".join([boardCode, "B"])
+                            whiteBishopCount+=1
+                        else:
+                            blackEval += BISHOP_VAL + BLACK_PIECE_SQUARES[2][row][col]
+                            boardCode = "".join([boardCode, "b"])
+                            blackBishopCount+=1
+                    elif (isinstance(self.board[row][col], Rook)):
+                        if (self.board[row][col].color == True):
+                            whiteEval += ROOK_VAL + WHITE_PIECE_SQUARES[3][row][col]
+                            boardCode = "".join([boardCode, "R"])
+                            whiteRookCount+=1
+                        else:
+                            blackEval += ROOK_VAL + BLACK_PIECE_SQUARES[3][row][col]
+                            boardCode = "".join([boardCode, "r"])
+                            blackRookCount+=1
+                    elif (isinstance(self.board[row][col], Knight)):
+                        if (self.board[row][col].color == True):
+                            whiteEval += KNIGHT_VAL + WHITE_PIECE_SQUARES[1][row][col]
+                            boardCode = "".join([boardCode, "N"])
+                            whiteKnightCount+=1
+                        else:
+                            blackEval += KNIGHT_VAL + BLACK_PIECE_SQUARES[1][row][col]
+                            boardCode = "".join([boardCode, "n"])
+                            blackKnightCount+=1
+                    elif (isinstance(self.board[row][col], Pawn)):
+                        if (self.board[row][col].color == True):
+                            whiteEval += PAWN_VAL + WHITE_PIECE_SQUARES[0][row][col]
+                            boardCode = "".join([boardCode, "P"])
+                            whitePawnCount+=1
+                            stackedWhitePawns += 1
+                        else:
+                            blackEval += PAWN_VAL + BLACK_PIECE_SQUARES[0][row][col]
+                            boardCode = "".join([boardCode, "p"])
+                            blackPawnCount+=1
+                            stackedBlackPawns += 1
+                    elif (isinstance(self.board[row][col], King)):
+                        if (self.board[row][col].color == True):
+                            whiteEval += WHITE_PIECE_SQUARES[5][row][col]
+                            boardCode = "".join([boardCode, "K"])
+                        else:
+                            blackEval += BLACK_PIECE_SQUARES[5][row][col]
+                            boardCode = "".join([boardCode, "k"])
+                else:
+                    boardCode = "".join([boardCode, " "])
+                
+            if (stackedWhitePawns > 1):
+                if (self.totalMoves < 15):
+                    whiteEval -= (STACKED_PENALTY ** stackedWhitePawns-1) * 20
+                else:
+                    whiteEval -= (STACKED_PENALTY ** stackedWhitePawns) * 15
+            
+            if (stackedBlackPawns > 1):
+                if (self.totalMoves < 15):
+                    blackEval -= (STACKED_PENALTY ** stackedBlackPawns-1) * 20
+                else:
+                    blackEval -= (STACKED_PENALTY ** stackedBlackPawns) * 15
+
+        # print ("WHITE EVAL: ", str(whiteEval))
+        # print ("BLACK EVAL: ", str(blackEval))
+
+        # Ratio of evaluation points (side to move's eval points/total)
+        if (self.whiteToMove == True and (whiteEval + blackEval != 0)):
+            eval = (whiteEval) / (whiteEval + blackEval)
+        else:
+            eval = (blackEval) / (whiteEval + blackEval)
+
+        if (boardCode in self.repetitions):
+            self.repetitions[boardCode] +=1
+            if (self.repetitions[boardCode] >= 3):
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], " 1/2-1/2"])
+                return -1, eval
+        else:
+            self.repetitions[boardCode] = 1
+            
         if (canMove == False):
             # If no piece of the side passed can move and the king is in check, it is checkmate
             if (inCheck == True):
                 self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "#"])
-                return 1
+                return 1, eval
             # If no piece of the side passed can move and the king is not in check, it is stalemate
             else:
-                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
-                return -1
-
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], " 1/2-1/2"])
+                return -1, eval
+        
+        # 50 move rule for draws, if 50 moves have passed since last capture or pawn move game is automatically drawn
+        if (self.totalMoves - self.lastCapture >= 50):  
+            return -1, eval
+            
         # Check if potential insufficient material remains, if there are pawns, rooks, or queens on the board then the game
         # cannot be drawn by insufficient material
-        insufficientMatRemaining = False
         if ((whiteQueenCount == 0 and blackQueenCount == 0) and (whiteRookCount == 0 and blackRookCount == 0) and (whitePawnCount == 0 and blackPawnCount == 0)):
-            insufficientMatRemaining = True
-        else:
-            if (inCheck == True):
-                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "+"])
-            return 0
-
-        if (insufficientMatRemaining == True):
             # Game is drawn if there are no bishops and there are ONLY 1 or less knights on either side in the gameq
             if ((whiteBishopCount == 0 and blackBishopCount == 0) and (whiteKnightCount < 2 and blackKnightCount < 2)):
-                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
-                return -1
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], " 1/2-1/2"])
+                return -1, eval
             # Game is drawn if there are no knights and there are ONLY 1 or less knights on either side in the game
-            if ((whiteKnightCount == 0 and blackKnightCount == 0) and (whiteBishopCount < 2 and blackBishopCount < 2)):
-                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
-                return -1
+            elif ((whiteKnightCount == 0 and blackKnightCount == 0) and (whiteBishopCount < 2 and blackBishopCount < 2)):
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], " 1/2-1/2"])
+                return -1, eval
             # Game is drawn if there is only 2 knights vs a king
-            if ((whiteKnightCount == 2 and blackBishopCount == 0) or (whiteBishopCount == 0 and blackKnightCount == 2)):
-                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
-                return -1
+            elif ((whiteKnightCount == 2 and blackBishopCount == 0) or (whiteBishopCount == 0 and blackKnightCount == 2)):
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], " 1/2-1/2"])
+                return -1, eval
             # Game is drawn if it's just 1 white knight vs only one black bishop
-            if ((whiteKnightCount == 1 and whiteBishopCount == 0) and (blackBishopCount == 1 and blackKnightCount == 0)):
-                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
-                return -1
+            elif ((whiteKnightCount == 1 and whiteBishopCount == 0) and (blackBishopCount == 1 and blackKnightCount == 0)):
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], " 1/2-1/2"])
+                return -1, eval
             # Game is drawn if it's just one white bishop vs only one black knight
-            if ((whiteBishopCount == 1 and whiteKnightCount == 0) and (blackBishopCount == 0 and blackKnightCount == 1)):
-                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "1/2-1/2"])
-                return -1
+            elif ((whiteBishopCount == 1 and whiteKnightCount == 0) and (blackBishopCount == 0 and blackKnightCount == 1)):
+                self.listOfMoves[-1] = "".join([self.listOfMoves[-1], " 1/2-1/2"])
+                return -1, eval
+        
+        if (inCheck == True):
+            self.listOfMoves[-1] = "".join([self.listOfMoves[-1], "+"])
+            
+        return 0, eval
 
-        # If none of the previous conditions are met, the game continues
-        return 0
+    def GetBoard(self):
+        # Roll/shift the np array 1 to the right
+        self.whitePOV = np.roll(self.whitePOV, 1, axis = 0)
+        self.blackPOV = np.roll(self.blackPOV, 1, axis = 0)
+
+        lastWhiteState = np.zeros(shape = (8,8,14), dtype = np.float32)
+        lastBlackState = np.zeros(shape = (8,8,14), dtype = np.float32)
+
+        if (self.whiteToMove):
+            lastWhiteState [:, :, 12] = lastBlackState [:, :, 12] = -1
+        else:
+            lastWhiteState [:, :, 12] = lastBlackState [:, :, 12] = 1
+        
+        lastBlackState[:, :, 13] = lastWhiteState[:, :, 13] = self.totalMoves
+
+        for row in range (0, 8):
+            for col in range (0, 8):
+                piece = self.board[row][col]
+                if (piece is not None):
+                    if (piece.color == True):
+                        if (type(piece) == Pawn):
+                            lastWhiteState[row][col][0] = 1
+                            lastBlackState[7-row][7-col][6] = 1
+                        elif (type(piece) == Knight):
+                            lastWhiteState[row][col][1] = 1
+                            lastBlackState[7-row][7-col][7] = 1
+                        elif (type(piece) == Bishop):
+                            lastWhiteState[row][col][2] = 1
+                            lastBlackState[7-row][7-col][8] = 1
+                        elif (type(piece) == Rook):
+                            lastWhiteState[row][col][3] = 1
+                            lastBlackState[7-row][7-col][9] = 1
+                        elif (type(piece) == Queen):
+                            lastWhiteState[row][col][4] = 1
+                            lastBlackState[7-row][7-col][10] = 1
+                        elif (type(piece) == King):
+                            lastWhiteState[row][col][5] = 1
+                            lastBlackState[7-row][7-col][11] = 1
+                    else:
+                        if (type(piece) == Pawn):
+                            lastBlackState[7-row][7-col][0] = 1
+                            lastWhiteState[row][col][6] = 1
+                        elif (type(piece) == Knight):
+                            lastBlackState[7-row][7-col][1] = 1
+                            lastWhiteState[row][col][7] = 1
+                        elif (type(piece) == Bishop):
+                            lastBlackState[7-row][7-col][2] = 1
+                            lastWhiteState[row][col][8] = 1
+                        elif (type(piece) == Rook):
+                            lastBlackState[7-row][7-col][3] = 1
+                            lastWhiteState[row][col][9] = 1
+                        elif (type(piece) == Queen):
+                            lastBlackState[7-row][7-col][4] = 1
+                            lastWhiteState[row][col][10] = 1
+                        elif (type(piece) == King):
+                            lastBlackState[7-row][7-col][5] = 1 
+                            lastWhiteState[row][col][11] = 1              
+
+        self.whitePOV[0] = lastWhiteState
+        self.blackPOV[0] = lastBlackState
+        
+        return self.whitePOV, self.blackPOV
 
     # Prints a character representation of the board in which black pieces are lowercase and white pieces are uppercase
     def ShowBoard(self):
